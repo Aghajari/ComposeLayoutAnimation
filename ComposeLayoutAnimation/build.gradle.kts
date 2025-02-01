@@ -1,5 +1,4 @@
-import com.vanniktech.maven.publish.SonatypeHost
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
@@ -9,46 +8,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.maven.publish)
+    alias(libs.plugins.jetbrains.dokka)
 }
-
-mavenPublishing{
-    coordinates(
-        groupId = "io.github.aghajari",
-        artifactId = "ComposeLayoutAnimation",
-        version = "1.0.0"
-    )
-    pom{
-        name.set("ComposeLayoutAnimation")
-        description.set("A Jetpack Compose library equivalent to ViewGroup's layoutAnimation, enabling staggered entrance animations for layout children.")
-        inceptionYear.set("2025")
-        url.set("https://github.com/Aghajari/ComposeLayoutAnimation")
-
-        licenses {
-            license {
-                name.set("The Apache License, Version 2.0")
-                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            }
-        }
-
-        // Specify developers information
-        developers {
-            developer {
-                id.set("Aghajari")
-                name.set("AmirHossein Aghajari")
-                email.set("amirhossein.aghajari.82@gmail.com")
-            }
-        }
-
-        // Specify SCM information
-        scm {
-            url.set("https://github.com/Aghajari/ComposeLayoutAnimation")
-        }
-    }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-    signAllPublications()
-}
-
 kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -124,3 +85,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
+val dokkaHtml by tasks.getting(DokkaTask::class)
+
+tasks.register("javadocJar", Jar::class) {
+    dependsOn(dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaHtml.outputDirectory)
+}
+
+//apply(from = "$rootDir/maven/publish.gradle")

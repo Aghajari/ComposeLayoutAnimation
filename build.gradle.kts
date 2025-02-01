@@ -6,4 +6,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.jetbrainsCompose) apply false
+    alias(libs.plugins.jetbrains.dokka)
+    alias(libs.plugins.nexus.publish)
 }
+
+//apply(from = "$rootDir/maven/config.gradle")
