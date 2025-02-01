@@ -16,7 +16,7 @@ mavenPublishing{
     coordinates(
         groupId = "io.github.aghajari",
         artifactId = "ComposeLayoutAnimation",
-        version = "0.1.1"
+        version = "1.0.0"
     )
     pom{
         name.set("ComposeLayoutAnimation")
