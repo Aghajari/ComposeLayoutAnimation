@@ -1,2 +1,9 @@
-
 .DS_Store
+build
+ComposeLayoutAnimation/build
+app/build
+.idea
+.gradle
+local.properties
+.kotlin
+kotlin-js-store
