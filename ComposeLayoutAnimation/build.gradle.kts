@@ -1,11 +1,104 @@
-import org.jetbrains.dokka.gradle.DokkaTask
+import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.jetbrains.dokka)
+    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.maven.publish)
 }
 
+mavenPublishing{
+    coordinates(
+        groupId = "io.github.aghajari",
+        artifactId = "ComposeLayoutAnimation",
+        version = "0.1.1"
+    )
+    pom{
+        name.set("ComposeLayoutAnimation")
+        description.set("A Jetpack Compose library equivalent to ViewGroup's layoutAnimation, enabling staggered entrance animations for layout children.")
+        inceptionYear.set("2025")
+        url.set("https://github.com/Aghajari/ComposeLayoutAnimation")
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+
+        // Specify developers information
+        developers {
+            developer {
+                id.set("Aghajari")
+                name.set("AmirHossein Aghajari")
+                email.set("amirhossein.aghajari.82@gmail.com")
+            }
+        }
+
+        // Specify SCM information
+        scm {
+            url.set("https://github.com/Aghajari/ComposeLayoutAnimation")
+        }
+    }
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+}
+
+kotlin {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "ComposeLayoutAnimation"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "ComposeLayoutAnimation.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
+                        add(project.projectDir.path)
+                    }
+                }
+            }
+        }
+        binaries.library()
+    }
+
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+        }
+        publishLibraryVariants("release","debug")
+    }
+
+    jvm("desktop")
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    sourceSets {
+        val desktopMain by getting
+
+        androidMain.dependencies {
+            implementation(compose.preview)
+            implementation(libs.androidx.activity.compose)
+        }
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.kotlinx.datetime)
+        }
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+        }
+    }
+}
 android {
     namespace = "com.aghajari.composelayoutanimation"
     compileSdk = 35
@@ -30,42 +123,4 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
-
-dependencies {
-
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.foundation)
-    implementation(libs.androidx.animation.core)
-    implementation(libs.androidx.animation)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    debugImplementation(libs.androidx.ui.tooling)
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-}
-
-val dokkaHtml by tasks.getting(DokkaTask::class)
-
-tasks.register("javadocJar", Jar::class) {
-    dependsOn(dokkaHtml)
-    archiveClassifier.set("javadoc")
-    from(dokkaHtml.outputDirectory)
-}
-
-apply(from = "$rootDir/maven/publish.gradle")

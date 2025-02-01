@@ -1,8 +1,0 @@
-siteUrl = https://github.com/Aghajari/ComposeLayoutAnimation
-gitUrl = https://github.com/Aghajari/ComposeLayoutAnimation.git
-version = 1.0.0
-groupId = io.github.aghajari
-licenses = ['Apache-2.0']
-id = ComposeLayoutAnimation
-name = ComposeLayoutAnimation
-description = A Jetpack Compose library equivalent to ViewGroup's layoutAnimation, enabling staggered entrance animations for layout children.
