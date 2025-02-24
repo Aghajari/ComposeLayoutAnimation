@@ -40,6 +40,12 @@ internal class LayoutAnimationScopeImpl(
         return childIndex++
     }
 
+    override fun Modifier.animateLazyLayoutItem(label: String?): Modifier {
+        return if (transition.currentState.not()) {
+            animateLayoutItem(label = label)
+        } else this
+    }
+
     override fun Modifier.animateLayoutItem(
         label: String?,
     ) = this.composed {

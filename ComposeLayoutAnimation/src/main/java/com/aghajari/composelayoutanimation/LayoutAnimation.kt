@@ -92,4 +92,20 @@ interface LayoutAnimationScope {
     fun Modifier.animateLayoutItem(
         label: String? = null,
     ): Modifier
+
+    /**
+     * Creates a modifier that applies the animation to a lazy layout item.
+     * Each item with this modifier will be animated according to the [LayoutAnimationSpec].
+     *
+     * The animation will run if [LayoutAnimationState.isCurrentlyVisible] returns `false`,
+     * ensuring that the animation won't repeat after its initial run.
+     * This helps prevent potential bugs that may occur when scrolling a lazy layout.
+     *
+     * @param label Optional debug label for the item's animation
+     * @return Modified [Modifier] with animation capabilities
+     * @see animateLayoutItem
+     */
+    fun Modifier.animateLazyLayoutItem(
+        label: String? = null,
+    ): Modifier
 }
