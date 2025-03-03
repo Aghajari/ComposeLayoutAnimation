@@ -28,7 +28,7 @@ The library provides two types of animations:
 
 ```groovy
 dependencies {
-    implementation 'io.github.aghajari:ComposeLayoutAnimation:1.0.0'
+    implementation 'io.github.aghajari:ComposeLayoutAnimation:1.0.1'
 }
 ```
 
@@ -55,6 +55,8 @@ Column {
     }
 }
 ```
+
+<b>Note:</b> Use `Modifier.animateLazyLayoutItem()` for Lazy layouts
 
 Output:
 
